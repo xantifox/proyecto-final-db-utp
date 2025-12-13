@@ -1,287 +1,337 @@
 <?php
 /**
- * Dashboard Principal del Sistema FONDEP
- * VERSION DE PRUEBA CON DATOS SIMULADOS
+ * DASHBOARD PRINCIPAL - Sistema FONDEP
+ * Página de inicio con resumen ejecutivo del sistema
+ * 
+ * Integración de datos:
+ * - PostgreSQL: Estadísticas de convocatorias y postulaciones
+ * - MongoDB: Total de propuestas y evaluaciones
+ * - Cassandra: Eventos del sistema
  */
 
 $page_title = "Dashboard";
 require_once 'includes/header.php';
+require_once 'includes/datos_simulados.php';
 
-// =====================================================
-// DATOS SIMULADOS - PostgreSQL
-// =====================================================
-$totalConvocatorias = 8;
-$totalPostulaciones = 247;
+// Obtener datos consolidados
+$convocatorias = obtenerConvocatorias();
+$postulaciones = obtenerPostulaciones();
+$evaluaciones = obtenerEvaluaciones();
+$regiones = obtenerRegiones();
 
-$postulacionesPorEstado = [
-    ['estado' => 'EN_REVISION', 'cantidad' => 89],
-    ['estado' => 'EN_EVALUACION', 'cantidad' => 73],
-    ['estado' => 'APROBADA', 'cantidad' => 52],
-    ['estado' => 'RECHAZADA', 'cantidad' => 21],
-    ['estado' => 'OBSERVADA', 'cantidad' => 12]
+// Estadísticas PostgreSQL
+$total_convocatorias = count($convocatorias);
+$total_postulaciones = count($postulaciones);
+$conv_abiertas = count(array_filter($convocatorias, fn($c) => $c['estado'] == 'ABIERTA'));
+$post_aprobadas = count(array_filter($postulaciones, fn($p) => $p['estado'] == 'APROBADA'));
+
+// Estadísticas MongoDB
+$total_evaluaciones = count($evaluaciones);
+$evaluaciones_completadas = count(array_filter($evaluaciones, fn($e) => $e['estado'] == 'COMPLETADA'));
+
+// Estadísticas Cassandra
+$total_eventos = 1247; // Simulado
+$eventos_hoy = 83;
+
+// Postulaciones por estado
+$estados_post = [
+    'APROBADA' => count(array_filter($postulaciones, fn($p) => $p['estado'] == 'APROBADA')),
+    'EN_EVALUACION' => count(array_filter($postulaciones, fn($p) => $p['estado'] == 'EN_EVALUACION')),
+    'EN_REVISION' => count(array_filter($postulaciones, fn($p) => $p['estado'] == 'EN_REVISION')),
+    'RECHAZADA' => count(array_filter($postulaciones, fn($p) => $p['estado'] == 'RECHAZADA')),
+    'OBSERVADA' => count(array_filter($postulaciones, fn($p) => $p['estado'] == 'OBSERVADA'))
 ];
 
-$convocatoriaActiva = [
-    [
-        'nombre' => 'Innovación Educativa 2025 - Primera Convocatoria',
-        'codigo' => 'FONDEP-2025-01',
-        'fecha_inicio' => '2025-01-15',
-        'fecha_cierre' => '2025-03-30',
-        'monto_maximo' => 50000.00,
-        'estado' => 'ACTIVA'
-    ]
-];
+// Distribución regional
+$dist_regional = [];
+foreach ($postulaciones as $post) {
+    $escuela = array_filter(obtenerEscuelas(), fn($e) => $e['id'] == $post['escuela_id']);
+    if (!empty($escuela)) {
+        $escuela = reset($escuela);
+        $region = obtenerNombreRegion($escuela['region_id']);
+        $dist_regional[$region] = ($dist_regional[$region] ?? 0) + 1;
+    }
+}
+arsort($dist_regional);
 
-$topRegiones = [
-    ['region' => 'Lima', 'total' => 78],
-    ['region' => 'Arequipa', 'total' => 34],
-    ['region' => 'La Libertad', 'total' => 29],
-    ['region' => 'Cusco', 'total' => 24],
-    ['region' => 'Piura', 'total' => 18]
-];
-
-// =====================================================
-// DATOS SIMULADOS - MongoDB
-// =====================================================
-$totalPropuestas = 247;
-$totalEvaluaciones = 156;
-
-$propuestasPorArea = [
-    ['_id' => 'Tecnología Educativa', 'cantidad' => 89],
-    ['_id' => 'Metodologías Innovadoras', 'cantidad' => 67],
-    ['_id' => 'Inclusión Educativa', 'cantidad' => 43],
-    ['_id' => 'Educación Rural', 'cantidad' => 28],
-    ['_id' => 'Gestión Pedagógica', 'cantidad' => 20]
-];
-
-// =====================================================
-// DATOS SIMULADOS - Cassandra
-// =====================================================
-$totalEventos = 1247;
-$eventosHoy = 83;
-
+// Convocatorias abiertas
+$convocatorias_abiertas = array_filter($convocatorias, fn($c) => $c['estado'] == 'ABIERTA');
 ?>
 
-<div class="container">
-    <h1 class="mb-4">Dashboard - Sistema FONDEP</h1>
+<div class="container" style="padding: 2rem 0;">
     
-    <div class="alert alert-info">
-        <strong>🔍 Modo de Prueba:</strong> Visualizando con datos simulados. 
-        Las conexiones a bases de datos están deshabilitadas temporalmente.
+    <!-- Header -->
+    <div style="margin-bottom: 2rem;">
+        <h1 style="margin: 0; color: var(--dark-color);">📊 Dashboard - Sistema FONDEP</h1>
+        <p style="margin: 0.5rem 0 0 0; color: #6b7280;">
+            Panel de control y estadísticas del sistema de gestión de proyectos de innovación educativa
+        </p>
     </div>
-    
-    <!-- ESTADÍSTICAS PRINCIPALES -->
-    <div class="row">
-        <div class="col-3">
-            <div class="stat-card">
-                <div class="stat-card-title">Total Convocatorias</div>
-                <div class="stat-card-value"><?php echo $totalConvocatorias; ?></div>
-                <div class="stat-card-subtitle">Registradas en el sistema</div>
-            </div>
-        </div>
-        
-        <div class="col-3">
-            <div class="stat-card success">
-                <div class="stat-card-title">Total Postulaciones</div>
-                <div class="stat-card-value"><?php echo $totalPostulaciones; ?></div>
-                <div class="stat-card-subtitle">Escuelas participantes</div>
-            </div>
-        </div>
-        
-        <div class="col-3">
-            <div class="stat-card warning">
-                <div class="stat-card-title">Total Propuestas</div>
-                <div class="stat-card-value"><?php echo $totalPropuestas; ?></div>
-                <div class="stat-card-subtitle">Documentos en MongoDB</div>
-            </div>
-        </div>
-        
-        <div class="col-3">
-            <div class="stat-card danger">
-                <div class="stat-card-title">Eventos del Sistema</div>
-                <div class="stat-card-value"><?php echo number_format($totalEventos); ?></div>
-                <div class="stat-card-subtitle">Hoy: <?php echo $eventosHoy; ?> eventos</div>
-            </div>
-        </div>
+
+    <!-- Alerta de Modo Prueba -->
+    <div class="alert alert-info" style="margin-bottom: 2rem;">
+        <strong>🔍 Modo de Prueba:</strong> El sistema está funcionando con datos simulados. 
+        Las conexiones a PostgreSQL, MongoDB y Cassandra están preparadas para activarse.
     </div>
-    
-    <!-- CONVOCATORIA ACTIVA -->
-    <?php if (!empty($convocatoriaActiva)): ?>
-    <div class="card">
-        <div class="card-header">
-            <h2>Convocatoria Activa</h2>
-        </div>
-        <div class="card-body">
-            <h3><?php echo htmlspecialchars($convocatoriaActiva[0]['nombre']); ?></h3>
-            <p><strong>Código:</strong> <?php echo htmlspecialchars($convocatoriaActiva[0]['codigo']); ?></p>
-            <p><strong>Periodo:</strong> 
-                <?php echo date('d/m/Y', strtotime($convocatoriaActiva[0]['fecha_inicio'])); ?> - 
-                <?php echo date('d/m/Y', strtotime($convocatoriaActiva[0]['fecha_cierre'])); ?>
-            </p>
-            <p><strong>Monto Máximo:</strong> S/ <?php echo number_format($convocatoriaActiva[0]['monto_maximo'], 2); ?></p>
-            <span class="badge badge-success"><?php echo $convocatoriaActiva[0]['estado']; ?></span>
-        </div>
-    </div>
-    <?php endif; ?>
-    
-    <!-- FILAS DE INFORMACIÓN -->
-    <div class="row">
-        <!-- POSTULACIONES POR ESTADO -->
-        <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Postulaciones por Estado (PostgreSQL)</h3>
+
+    <!-- KPIs Principales -->
+    <div class="grid" style="margin-bottom: 2rem;">
+        <div class="col-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <div class="stat-number"><?php echo $total_convocatorias; ?></div>
+                <div class="stat-label">Convocatorias</div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem;">
+                    <?php echo $conv_abiertas; ?> abiertas
                 </div>
-                <div class="card-body">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Estado</th>
-                                    <th class="text-right">Cantidad</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($postulacionesPorEstado as $estado): ?>
-                                <tr>
-                                    <td>
-                                        <?php 
-                                        $badgeClass = 'badge-secondary';
-                                        if ($estado['estado'] == 'APROBADA') $badgeClass = 'badge-success';
-                                        elseif ($estado['estado'] == 'EN_EVALUACION') $badgeClass = 'badge-warning';
-                                        elseif ($estado['estado'] == 'RECHAZADA') $badgeClass = 'badge-danger';
-                                        elseif ($estado['estado'] == 'EN_REVISION') $badgeClass = 'badge-primary';
-                                        ?>
-                                        <span class="badge <?php echo $badgeClass; ?>"><?php echo $estado['estado']; ?></span>
-                                    </td>
-                                    <td class="text-right fw-bold"><?php echo $estado['cantidad']; ?></td>
-                                </tr>
-                                <?php endforeach; ?>
-                                <tr style="background-color: #f9fafb; font-weight: bold;">
-                                    <td>TOTAL</td>
-                                    <td class="text-right"><?php echo array_sum(array_column($postulacionesPorEstado, 'cantidad')); ?></td>
-                                </tr>
-                            </tbody>
-                        </table>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <div class="stat-number"><?php echo $total_postulaciones; ?></div>
+                <div class="stat-label">Postulaciones</div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem;">
+                    <?php echo $post_aprobadas; ?> aprobadas
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <div class="stat-number"><?php echo $total_evaluaciones; ?></div>
+                <div class="stat-label">Evaluaciones</div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem;">
+                    <?php echo $evaluaciones_completadas; ?> completadas
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <div class="stat-number"><?php echo number_format($total_eventos); ?></div>
+                <div class="stat-label">Eventos del Sistema</div>
+                <div style="margin-top: 0.5rem; font-size: 0.875rem;">
+                    Hoy: <?php echo $eventos_hoy; ?> eventos
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        
+        <!-- Columna Izquierda -->
+        <div class="col-8">
+            
+            <!-- Convocatorias Abiertas -->
+            <?php if (!empty($convocatorias_abiertas)): ?>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, #eff6ff, #ffffff);">
+                        <h3 style="margin: 0; font-size: 1.125rem; color: var(--primary-color);">
+                            📢 Convocatorias Abiertas
+                        </h3>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- TOP REGIONES -->
-        <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Top 5 Regiones - Postulaciones</h3>
-                </div>
-                <div class="card-body">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Región</th>
-                                    <th class="text-right">Postulaciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $posicion = 1; ?>
-                                <?php foreach ($topRegiones as $region): ?>
-                                <tr>
-                                    <td><?php echo $posicion++; ?></td>
-                                    <td><?php echo htmlspecialchars($region['region']); ?></td>
-                                    <td class="text-right fw-bold"><?php echo $region['total']; ?></td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- PROPUESTAS POR ÁREA TEMÁTICA (MongoDB) -->
-    <div class="card">
-        <div class="card-header">
-            <h3>Propuestas por Área Temática (MongoDB)</h3>
-        </div>
-        <div class="card-body">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Área Temática</th>
-                            <th class="text-right">Propuestas</th>
-                            <th class="text-right">Porcentaje</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        $totalProp = array_sum(array_column($propuestasPorArea, 'cantidad'));
-                        foreach ($propuestasPorArea as $area): 
-                            $porcentaje = ($area['cantidad'] / $totalProp) * 100;
-                        ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($area['_id']); ?></td>
-                            <td class="text-right fw-bold"><?php echo $area['cantidad']; ?></td>
-                            <td class="text-right"><?php echo number_format($porcentaje, 1); ?>%</td>
-                        </tr>
+                    <div style="padding: 1.5rem;">
+                        <?php foreach ($convocatorias_abiertas as $conv): ?>
+                            <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f9fafb; border-left: 4px solid var(--primary-color); border-radius: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                    <h4 style="margin: 0; color: var(--dark-color);">
+                                        <?php echo htmlspecialchars($conv['titulo']); ?>
+                                    </h4>
+                                    <span class="badge badge-success">ABIERTA</span>
+                                </div>
+                                <p style="margin: 0.5rem 0; color: #6b7280; font-size: 0.875rem;">
+                                    <?php echo htmlspecialchars($conv['descripcion']); ?>
+                                </p>
+                                <div class="grid" style="margin-top: 1rem;">
+                                    <div class="col-4">
+                                        <div style="font-size: 0.875rem; color: #6b7280;">Código</div>
+                                        <div style="font-weight: 600;"><?php echo htmlspecialchars($conv['codigo']); ?></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div style="font-size: 0.875rem; color: #6b7280;">Cierre</div>
+                                        <div style="font-weight: 600;"><?php echo formatearFecha($conv['fecha_fin']); ?></div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div style="font-size: 0.875rem; color: #6b7280;">Presupuesto</div>
+                                        <div style="font-weight: 600; color: var(--success-color);">
+                                            <?php echo formatearMonto($conv['presupuesto_total']); ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <a href="modules/convocatorias/detalle.php?id=<?php echo $conv['id']; ?>" 
+                                       class="btn btn-primary btn-sm">
+                                        Ver Detalle
+                                    </a>
+                                    <a href="modules/postulaciones/crear.php?convocatoria_id=<?php echo $conv['id']; ?>" 
+                                       class="btn btn-success btn-sm">
+                                        Postular Proyecto
+                                    </a>
+                                </div>
+                            </div>
                         <?php endforeach; ?>
-                        <tr style="background-color: #f9fafb; font-weight: bold;">
-                            <td>TOTAL</td>
-                            <td class="text-right"><?php echo $totalProp; ?></td>
-                            <td class="text-right">100%</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    
-    <!-- INFORMACIÓN DE CONEXIONES -->
-    <div class="card">
-        <div class="card-header">
-            <h3>Estado de Bases de Datos</h3>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-4">
-                    <div style="padding: 1rem; background-color: #dbeafe; border-radius: 6px;">
-                        <h4 style="margin-bottom: 0.5rem; color: #1e40af;">PostgreSQL</h4>
-                        <p style="margin: 0; font-size: 0.875rem;">
-                            <strong>Estado:</strong> <span class="badge badge-warning">Deshabilitado</span><br>
-                            <strong>Tablas:</strong> 10 tablas normalizadas<br>
-                            <strong>Datos:</strong> <?php echo $totalPostulaciones; ?> registros simulados
-                        </p>
                     </div>
                 </div>
-                
-                <div class="col-4">
-                    <div style="padding: 1rem; background-color: #d1fae5; border-radius: 6px;">
-                        <h4 style="margin-bottom: 0.5rem; color: #065f46;">MongoDB</h4>
-                        <p style="margin: 0; font-size: 0.875rem;">
-                            <strong>Estado:</strong> <span class="badge badge-warning">Deshabilitado</span><br>
+            <?php endif; ?>
+
+            <!-- Postulaciones por Estado -->
+            <div class="card">
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); background-color: #f9fafb;">
+                    <h3 style="margin: 0; font-size: 1.125rem;">📝 Postulaciones por Estado</h3>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Estado</th>
+                                <th>Cantidad</th>
+                                <th>Porcentaje</th>
+                                <th style="width: 40%;">Distribución</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($estados_post as $estado => $cantidad): ?>
+                                <?php if ($cantidad > 0): ?>
+                                    <tr>
+                                        <td>
+                                            <span class="badge <?php echo obtenerClaseBadge($estado); ?>">
+                                                <?php echo str_replace('_', ' ', $estado); ?>
+                                            </span>
+                                        </td>
+                                        <td><strong><?php echo $cantidad; ?></strong></td>
+                                        <td><?php echo number_format(($cantidad / $total_postulaciones) * 100, 1); ?>%</td>
+                                        <td>
+                                            <div style="background-color: #e5e7eb; height: 20px; border-radius: 10px; overflow: hidden;">
+                                                <div style="background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); 
+                                                            height: 100%; 
+                                                            width: <?php echo ($cantidad / $total_postulaciones) * 100; ?>%;
+                                                            display: flex;
+                                                            align-items: center;
+                                                            justify-content: flex-end;
+                                                            padding-right: 0.5rem;
+                                                            color: white;
+                                                            font-size: 0.75rem;
+                                                            font-weight: 600;">
+                                                    <?php echo $cantidad; ?>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="padding: 1rem; background-color: #f9fafb; text-align: center;">
+                    <a href="modules/postulaciones/listar.php" class="btn btn-primary">
+                        Ver Todas las Postulaciones
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Columna Derecha -->
+        <div class="col-4">
+            
+            <!-- Top 5 Regiones -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); background-color: #f9fafb;">
+                    <h3 style="margin: 0; font-size: 1rem;">🗺️ Top 5 Regiones</h3>
+                </div>
+                <div style="padding: 1rem;">
+                    <?php $count = 0; ?>
+                    <?php foreach (array_slice($dist_regional, 0, 5) as $region => $cantidad): ?>
+                        <?php $count++; ?>
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="width: 24px; height: 24px; background-color: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem;">
+                                        <?php echo $count; ?>
+                                    </div>
+                                    <span style="font-weight: 500;"><?php echo htmlspecialchars($region); ?></span>
+                                </div>
+                                <strong style="color: var(--primary-color);"><?php echo $cantidad; ?></strong>
+                            </div>
+                            <div style="background-color: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;">
+                                <div style="background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); 
+                                            height: 100%; 
+                                            width: <?php echo ($cantidad / $total_postulaciones) * 100; ?>%;">
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); text-align: center;">
+                        <a href="modules/reportes/estadisticas.php" style="color: var(--primary-color); text-decoration: none; font-size: 0.875rem;">
+                            Ver estadísticas completas →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accesos Rápidos -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); background-color: #f9fafb;">
+                    <h3 style="margin: 0; font-size: 1rem;">⚡ Accesos Rápidos</h3>
+                </div>
+                <div style="padding: 1rem;">
+                    <a href="modules/convocatorias/crear.php" 
+                       class="btn btn-primary" 
+                       style="width: 100%; margin-bottom: 0.5rem;">
+                        ➕ Nueva Convocatoria
+                    </a>
+                    <a href="modules/postulaciones/crear.php" 
+                       class="btn btn-success" 
+                       style="width: 100%; margin-bottom: 0.5rem;">
+                        📝 Nueva Postulación
+                    </a>
+                    <a href="modules/evaluaciones/listar.php" 
+                       class="btn btn-warning" 
+                       style="width: 100%; margin-bottom: 0.5rem;">
+                        ⭐ Mis Evaluaciones
+                    </a>
+                    <a href="modules/reportes/auditoria.php" 
+                       class="btn btn-info" 
+                       style="width: 100%;">
+                        🔍 Ver Auditoría
+                    </a>
+                </div>
+            </div>
+
+            <!-- Estado de Bases de Datos -->
+            <div class="card">
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); background-color: #f9fafb;">
+                    <h3 style="margin: 0; font-size: 1rem;">💾 Bases de Datos</h3>
+                </div>
+                <div style="padding: 1rem;">
+                    <div style="padding: 1rem; background-color: #dbeafe; border-radius: 6px; margin-bottom: 0.75rem;">
+                        <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.25rem;">PostgreSQL</div>
+                        <div style="font-size: 0.75rem; color: #1e40af;">
+                            <strong>Estado:</strong> <span class="badge badge-warning" style="font-size: 0.7rem;">Simulado</span><br>
+                            <strong>Tablas:</strong> 10 tablas<br>
+                            <strong>Datos:</strong> <?php echo $total_postulaciones; ?> registros
+                        </div>
+                    </div>
+                    <div style="padding: 1rem; background-color: #d1fae5; border-radius: 6px; margin-bottom: 0.75rem;">
+                        <div style="font-weight: 600; color: #065f46; margin-bottom: 0.25rem;">MongoDB</div>
+                        <div style="font-size: 0.75rem; color: #065f46;">
+                            <strong>Estado:</strong> <span class="badge badge-warning" style="font-size: 0.7rem;">Simulado</span><br>
                             <strong>Colecciones:</strong> 4 colecciones<br>
-                            <strong>Documentos:</strong> <?php echo $totalPropuestas; ?> documentos simulados
-                        </p>
+                            <strong>Documentos:</strong> <?php echo $total_postulaciones; ?> docs
+                        </div>
                     </div>
-                </div>
-                
-                <div class="col-4">
                     <div style="padding: 1rem; background-color: #fee2e2; border-radius: 6px;">
-                        <h4 style="margin-bottom: 0.5rem; color: #991b1b;">Cassandra</h4>
-                        <p style="margin: 0; font-size: 0.875rem;">
-                            <strong>Estado:</strong> <span class="badge badge-warning">Deshabilitado</span><br>
-                            <strong>Keyspace:</strong> fondep_eventos<br>
-                            <strong>Eventos:</strong> <?php echo number_format($totalEventos); ?> eventos simulados
-                        </p>
+                        <div style="font-weight: 600; color: #991b1b; margin-bottom: 0.25rem;">Cassandra</div>
+                        <div style="font-size: 0.75rem; color: #991b1b;">
+                            <strong>Estado:</strong> <span class="badge badge-warning" style="font-size: 0.7rem;">Simulado</span><br>
+                            <strong>Keyspace:</strong> fondep_analytics<br>
+                            <strong>Eventos:</strong> <?php echo number_format($total_eventos); ?> eventos
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
+
     </div>
-    
+
 </div>
 
 <?php require_once 'includes/footer.php'; ?>
