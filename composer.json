@@ -1,0 +1,32 @@
+{
+    "name": "utp/fondep-proyecto",
+    "description": "Sistema de Gestión de Proyectos de Innovación Educativa - FONDEP",
+    "type": "project",
+    "keywords": ["fondep", "educacion", "innovacion", "base-datos"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "SANTIAGO MANSILLA",
+            "email": "u22325995@utp.edu.pe"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "mongodb/mongodb": "^1.13"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "platform": {
+            "ext-mongodb": "1.13.0"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
