@@ -114,7 +114,7 @@ $promedio_puntajes = !empty($puntajes) ? array_sum($puntajes) / count($puntajes)
                 <h3 style="margin: 0 0 1rem 0; color: var(--primary-color);">
                     <?php echo htmlspecialchars($convocatoria['titulo']); ?>
                 </h3>
-                <div class="grid">
+                <div class="row">
                     <div class="col-3">
                         <div style="font-size: 0.875rem; color: #6b7280;">Presupuesto</div>
                         <div style="font-size: 1.25rem; font-weight: 700; color: var(--success-color);">
@@ -139,7 +139,7 @@ $promedio_puntajes = !empty($puntajes) ? array_sum($puntajes) / count($puntajes)
         </div>
 
         <!-- Estadísticas de Evaluación -->
-        <div class="grid" style="margin-bottom: 2rem;">
+        <div class="row" style="margin-bottom: 2rem;">
             <div class="col-3">
                 <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
                     <div class="stat-number"><?php echo $total_postulaciones; ?></div>
@@ -277,7 +277,7 @@ $promedio_puntajes = !empty($puntajes) ? array_sum($puntajes) / count($puntajes)
 
         <!-- Análisis Adicional -->
         <?php if ($evaluadas > 0): ?>
-            <div class="grid" style="margin-top: 2rem; gap: 1rem;">
+            <div class="row" style="margin-top: 2rem; gap: 1rem;">
                 <div class="col-6">
                     <div class="card">
                         <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); background-color: #f9fafb;">

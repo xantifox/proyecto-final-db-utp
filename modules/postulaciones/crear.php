@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="POST" action="">
-        <div class="grid">
+        <div class="row">
             
             <!-- Formulario Principal -->
             <div class="col-8">
@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Monto -->
-                        <div class="grid">
+                        <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
                                     <label class="form-label">
@@ -194,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Beneficiarios -->
-                        <div class="grid">
+                        <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
                                     <label class="form-label">Número de Beneficiarios Directos</label>
@@ -270,10 +270,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <li><strong>MongoDB:</strong> Propuesta completa con objetivos y metodología</li>
                         <li><strong>Cassandra:</strong> Evento de creación para auditoría</li>
                     </ul>
-                </div>
-
-                <div class="alert alert-warning">
-                    <strong>⚠️ Importante:</strong> Una vez enviada, la postulación entrará en estado "EN_REVISION" y será asignada a evaluadores.
                 </div>
 
             </div>

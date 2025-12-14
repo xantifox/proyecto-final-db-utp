@@ -108,7 +108,7 @@ $solo_lectura = $evaluacion['estado'] == 'COMPLETADA';
         </div>
     <?php endif; ?>
 
-    <div class="grid">
+    <div class="row">
         
         <!-- Columna Principal - Formulario de Evaluación -->
         <div class="col-8">
@@ -121,7 +121,7 @@ $solo_lectura = $evaluacion['estado'] == 'COMPLETADA';
                     </h3>
                 </div>
                 <div style="padding: 1.5rem;">
-                    <div class="grid">
+                    <div class="row">
                         <div class="col-6">
                             <div style="margin-bottom: 1rem;">
                                 <div style="font-size: 0.875rem; color: #6b7280;">Convocatoria</div>

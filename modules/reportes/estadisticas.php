@@ -80,7 +80,7 @@ $promedio_puntajes = !empty($puntajes_evaluaciones) ? array_sum($puntajes_evalua
     </div>
 
     <!-- KPIs Principales -->
-    <div class="grid" style="margin-bottom: 2rem;">
+    <div class="row" style="margin-bottom: 2rem;">
         <div class="col-3">
             <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
                 <div class="stat-number"><?php echo $total_convocatorias; ?></div>
@@ -107,7 +107,7 @@ $promedio_puntajes = !empty($puntajes_evaluaciones) ? array_sum($puntajes_evalua
         </div>
     </div>
 
-    <div class="grid">
+    <div class="row">
         
         <!-- Columna Izquierda -->
         <div class="col-6">
@@ -238,7 +238,7 @@ $promedio_puntajes = !empty($puntajes_evaluaciones) ? array_sum($puntajes_evalua
                     $conv_evaluacion = count(array_filter($convocatorias, fn($c) => $c['estado'] == 'EN_EVALUACION'));
                     $conv_planificadas = count(array_filter($convocatorias, fn($c) => $c['estado'] == 'PLANIFICADA'));
                     ?>
-                    <div class="grid" style="gap: 1rem;">
+                    <div class="row" style="gap: 1rem;">
                         <div class="col-6" style="text-align: center; padding: 1rem; background-color: #d1fae5; border-radius: 8px;">
                             <div style="font-size: 2rem; font-weight: 700; color: #065f46;">
                                 <?php echo $conv_abiertas; ?>
@@ -277,7 +277,7 @@ $promedio_puntajes = !empty($puntajes_evaluaciones) ? array_sum($puntajes_evalua
             <h3 style="margin: 0; font-size: 1.125rem;">⭐ Análisis de Evaluaciones (MongoDB)</h3>
         </div>
         <div style="padding: 1.5rem;">
-            <div class="grid">
+            <div class="row">
                 <div class="col-3" style="text-align: center;">
                     <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">
                         Total Evaluaciones

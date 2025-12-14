@@ -130,7 +130,7 @@ $evaluaciones = array_filter(obtenerEvaluaciones(), fn($e) => $e['postulacion_id
         <span class="badge badge-warning">Cassandra</span>
     </div>
 
-    <div class="grid">
+    <div class="row">
         
         <!-- Columna Principal -->
         <div class="col-8">
@@ -143,7 +143,7 @@ $evaluaciones = array_filter(obtenerEvaluaciones(), fn($e) => $e['postulacion_id
                     </h3>
                 </div>
                 <div style="padding: 1.5rem;">
-                    <div class="grid">
+                    <div class="row">
                         <div class="col-6">
                             <div style="margin-bottom: 1rem;">
                                 <div style="font-size: 0.875rem; color: #6b7280;">Convocatoria</div>
@@ -339,7 +339,7 @@ $evaluaciones = array_filter(obtenerEvaluaciones(), fn($e) => $e['postulacion_id
                     <div style="padding: 1rem;">
                         <?php $eval = reset($evaluaciones); ?>
                         <?php if ($eval['estado'] == 'COMPLETADA'): ?>
-                            <div class="grid" style="margin-bottom: 1rem;">
+                            <div class="row" style="margin-bottom: 1rem;">
                                 <div class="col-6" style="text-align: center; padding: 0.75rem; background-color: #dbeafe; border-radius: 6px;">
                                     <div style="font-size: 1rem; font-weight: 700; color: #1e40af;">
                                         <?php echo $eval['puntaje_pertinencia']; ?>

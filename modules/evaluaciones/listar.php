@@ -58,7 +58,7 @@ $pendientes = count(array_filter($mis_evaluaciones, fn($e) => $e['estado'] == 'A
     </div>
 
     <!-- Tarjetas de Estadísticas -->
-    <div class="grid" style="margin-bottom: 2rem;">
+    <div class="row" style="margin-bottom: 2rem;">
         <div class="col-4">
             <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
                 <div class="stat-number"><?php echo $total; ?></div>
@@ -165,7 +165,7 @@ $pendientes = count(array_filter($mis_evaluaciones, fn($e) => $e['estado'] == 'A
     </div>
 
     <!-- Información adicional -->
-    <div class="grid" style="margin-top: 1.5rem; gap: 1rem;">
+    <div class="row" style="margin-top: 1.5rem; gap: 1rem;">
         <div class="col-6">
             <div class="alert alert-info">
                 <strong>ℹ️ Criterios de Evaluación:</strong>

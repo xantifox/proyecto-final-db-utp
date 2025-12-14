@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     <?php endif; ?>
 
-    <div class="grid">
+    <div class="row">
         <!-- Formulario Principal -->
         <div class="col-8">
             <div class="card">
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Fechas -->
-                        <div class="grid">
+                        <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
                                     <label class="form-label">
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Presupuestos -->
-                        <div class="grid">
+                        <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
                                     <label class="form-label">
@@ -246,10 +246,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <li><strong>Abierta:</strong> Recibiendo postulaciones</li>
                     </ul>
                 </div>
-            </div>
-
-            <div class="alert alert-warning" style="margin-top: 1rem;">
-                <strong>⚠️ Nota:</strong> Al guardar, se registrará en PostgreSQL y se generará un evento en Cassandra para auditoría.
             </div>
         </div>
     </div>

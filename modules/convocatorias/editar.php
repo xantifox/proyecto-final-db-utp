@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="POST" action="">
-        <div class="grid">
+        <div class="row">
             
             <!-- Formulario Principal -->
             <div class="col-8">
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Fechas -->
-                        <div class="grid">
+                        <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
                                     <label class="form-label">
@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <!-- Presupuestos -->
-                        <div class="grid">
+                        <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
                                     <label class="form-label">Presupuesto Total (S/)</label>

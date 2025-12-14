@@ -59,7 +59,7 @@ $avance_promedio = count($metricas) > 0 ? array_sum(array_column($metricas, 'ava
     </div>
 
     <!-- KPIs de Seguimiento -->
-    <div class="grid" style="margin-bottom: 2rem;">
+    <div class="row" style="margin-bottom: 2rem;">
         <div class="col-3">
             <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
                 <div class="stat-number"><?php echo $total_proyectos; ?></div>
@@ -121,7 +121,7 @@ $avance_promedio = count($metricas) > 0 ? array_sum(array_column($metricas, 'ava
 
             <!-- Contenido del Proyecto -->
             <div style="padding: 1.5rem;">
-                <div class="grid">
+                <div class="row">
                     
                     <!-- Información General -->
                     <div class="col-4">
@@ -218,7 +218,7 @@ $avance_promedio = count($metricas) > 0 ? array_sum(array_column($metricas, 'ava
     <?php endif; ?>
 
     <!-- Información Técnica -->
-    <div class="grid" style="margin-top: 2rem; gap: 1rem;">
+    <div class="row" style="margin-top: 2rem; gap: 1rem;">
         <div class="col-6">
             <div class="alert alert-info">
                 <strong>📊 Query Cassandra para Métricas:</strong>

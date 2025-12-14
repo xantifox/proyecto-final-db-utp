@@ -18,9 +18,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // =====================================================
 define('DB_PGSQL_HOST', 'localhost');
 define('DB_PGSQL_PORT', '5432');
-define('DB_PGSQL_NAME', 'fondep_db');
+define('DB_PGSQL_NAME', 'fondep');
 define('DB_PGSQL_USER', 'postgres');
-define('DB_PGSQL_PASS', '');
+define('DB_PGSQL_PASS', '12345678');
 
 // =====================================================
 // CONFIGURACIÓN MONGODB

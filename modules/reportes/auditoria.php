@@ -77,7 +77,7 @@ sort($usuarios);
     </div>
 
     <!-- Estadísticas Rápidas -->
-    <div class="grid" style="margin-bottom: 2rem;">
+    <div class="row" style="margin-bottom: 2rem;">
         <div class="col-4">
             <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
                 <div class="stat-number"><?php echo number_format($total_eventos); ?></div>
@@ -239,7 +239,7 @@ sort($usuarios);
     </div>
 
     <!-- Información Técnica -->
-    <div class="grid" style="margin-top: 2rem; gap: 1rem;">
+    <div class="row" style="margin-top: 2rem; gap: 1rem;">
         <div class="col-6">
             <div class="alert alert-info">
                 <strong>📊 Estructura de Cassandra:</strong>
